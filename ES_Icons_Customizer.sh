@@ -155,9 +155,11 @@ show_preview() {
 
     printf "\033c" > "$CURR_TTY"
     chafa --size=30x20 --colors=256 "$temp_png" > "$CURR_TTY"
+    printf "\n  [ Press any button to return ]\n" > "$CURR_TTY"
     rm -f "$temp_svg" "$temp_png"
 
-    sleep 3
+    read -r -n1 -t 30 < /dev/tty1 2>/dev/null || true
+    printf "\033c" > "$CURR_TTY"
 }
 
 # Sauvegardes des icônes
@@ -229,7 +231,7 @@ service_color="$service_color"
 COLOREOF
 }
 
-# Saisie manuelle d'une couleur Hex
+# Couleurs connues
 color_label() {
     local hex="$1"
     case "$hex" in
@@ -675,10 +677,12 @@ Apply_Both() {
 
 # Menu pour les icônes Wifi
 Menu_WiFi() {
+    local default_item=1
     while true; do
         selection=$(dialog --colors --backtitle "$BACKTITLE" --title " WiFi Icon " \
             --extra-button --extra-label "Preview" \
             --cancel-label "Back" \
+            --default-item "$default_item" \
             --menu "\nChoose a WiFi icon style:" 16 50 7 \
             1 "Kirby" \
             2 "Space Invader" \
@@ -693,6 +697,7 @@ Menu_WiFi() {
         case $ret in
             1) return 1 ;;
             3)
+                default_item=$selection
                 case $selection in
                     1) show_preview "write_wifi_kirby"   ;; 2) show_preview "write_wifi_invader" ;;
                     3) show_preview "write_wifi_ghost"   ;; 4) show_preview "write_wifi_totoro"  ;;
@@ -706,10 +711,12 @@ Menu_WiFi() {
 
 # Menu pour les icônes Bluetooth
 Menu_Bluetooth() {
+    local default_item=1
     while true; do
         selection=$(dialog --colors --backtitle "$BACKTITLE" --title " Bluetooth Icon " \
             --extra-button --extra-label "Preview" \
             --cancel-label "Back" \
+            --default-item "$default_item" \
             --menu "\nChoose a Bluetooth icon style:" 16 50 7 \
             1 "Kirby" \
             2 "Space Invader" \
@@ -724,6 +731,7 @@ Menu_Bluetooth() {
         case $ret in
             1) return 1 ;;
             3)
+                default_item=$selection
                 case $selection in
                     1) show_preview "write_bt_kirby"   ;; 2) show_preview "write_bt_invader" ;;
                     3) show_preview "write_bt_ghost"   ;; 4) show_preview "write_bt_totoro"  ;;
